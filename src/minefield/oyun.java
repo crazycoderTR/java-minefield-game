@@ -21,7 +21,7 @@ public class oyun extends JFrame {
     public static final int SABIT_BOYUTLANDIRICI = 30; // Son deger olarak 30 kabul ettigimiz sabit boyutlandiricim
     private int[][] tarla; // mayin doseme alanimiz
     private JPanel ust_panel, oyun_paneli; // oyun panellerim
-    private boolean[][] buldum; // tiklanip tiklanmama olayi
+    private boolean[][] tiklanan; // tiklanip tiklanmama olayi
     private boolean[][] bayrak_kontrol; // bayrak kontrolu
     private int patlatilmayan; // bulunamayan mayinlar
     private boolean gulumseme; // oyun bitti mi
@@ -81,7 +81,7 @@ public class oyun extends JFrame {
         }
     }
 
-    public void main(oyun frame, int size) {
+    public void main(oyun frame, int boyut) {
         OyunMotoru oyun_motoru = new OyunMotoru(frame); // Oyun motorumu olusturuyorum
         FareyiIzle fareyi_izle = new FareyiIzle(frame); // Fare takibim
         JPanel ana_panelim = new JPanel();
@@ -91,12 +91,12 @@ public class oyun extends JFrame {
 
         this.patlatilmayan = 0;
 
-        buldum = new boolean[size][size];
-        bayrak_kontrol = new boolean[size][size];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        tiklanan = new boolean[boyut][boyut];
+        bayrak_kontrol = new boolean[boyut][boyut];
+        for (int i = 0; i < boyut; i++) {
+            for (int j = 0; j < boyut; j++) {
                 // varsayilan false ile dolduruyoruz
-                buldum[i][j] = false;
+                tiklanan[i][j] = false;
                 bayrak_kontrol[i][j] = false;
             }
         }
@@ -124,7 +124,7 @@ public class oyun extends JFrame {
         BoxLayout g1 = new BoxLayout(ust_panel, BoxLayout.X_AXIS);
         ust_panel.setLayout(g1);
 
-        JLabel jLabel1 = new JLabel("Bayrak = "); // bayrak sayimizi tutan label
+        JLabel jLabel1 = new JLabel(" Bayrak = "); // bayrak sayimizi tutan label
         jLabel1.setAlignmentX(Component.LEFT_ALIGNMENT); // sola yasla
         jLabel1.setHorizontalAlignment(JLabel.LEFT);
         bayrak_label = new JLabel("" + this.mayin_yok);
@@ -144,19 +144,19 @@ public class oyun extends JFrame {
 
         ust_panel.add(jLabel1);
         ust_panel.add(bayrak_label);
-        ust_panel.add(Box.createRigidArea(new Dimension((size - 1)*15 - 80, 50)));
+        ust_panel.add(Box.createRigidArea(new Dimension((boyut - 1)*15 - 80, 50)));
         ust_panel.add(duygu_butonum, BorderLayout.PAGE_START);
-        ust_panel.add(Box.createRigidArea(new Dimension((size - 1)*15 - 85, 50)));
+        ust_panel.add(Box.createRigidArea(new Dimension((boyut - 1)*15 - 85, 50)));
         ust_panel.add(jLabel2);
         ust_panel.add(zaman_label);
 
-        GridLayout g2 = new GridLayout(size, size);
+        GridLayout g2 = new GridLayout(boyut, boyut);
         oyun_paneli.setLayout(g2);
 
-        bombaalar = new JButton[size][size];
+        bombaalar = new JButton[boyut][boyut];
 
-        for (int i = 0; i < size; i++){
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < boyut; i++){
+            for (int j = 0; j < boyut; j++) {
                 bombaalar[i][j] = new JButton();
                 bombaalar[i][j].setPreferredSize(new Dimension(12, 12));
                 bombaalar[i][j].setBorder(new LineBorder(Color.BLACK));
@@ -175,7 +175,7 @@ public class oyun extends JFrame {
         frame.setContentPane(ana_panelim);
         this.setVisible(true);
 
-        mayinDoseme(size);
+        mayinDoseme(boyut);
 
         // timer baslat
         Zamanlayici zamanlayici = new Zamanlayici(this);
@@ -183,7 +183,7 @@ public class oyun extends JFrame {
     }
 
     public void sagTiklama (int x, int y) {
-        if(!buldum[x][y]) {
+        if(!tiklanan[x][y]) {
             if (bayrak_kontrol[x][y]) {
                 bombaalar[x][y].setIcon(null);
                 bayrak_kontrol[x][y] = false;
@@ -209,7 +209,54 @@ public class oyun extends JFrame {
 
     // herhangi bir butona tiklanma olayi
     public void butonTikla(int x, int y) {
+        if (!tiklanan[x][y] && bayrak_kontrol[x][y]) {
+            tiklanan[x][y] = true;
 
+            switch (tarla[x][y]) {
+                case -1:
+                    // mayin olma durumu
+                    try {
+                        bombaalar[x][y].setIcon(new ImageIcon(mayin_2_foto)); // mayina denk geldi
+                        bombaalar[x][y].setBackground(Color.RED);
+                        duygu_butonum.setIcon(new ImageIcon(kayip_2_foto));
+                    } catch (Exception e) {e.printStackTrace();}
+
+                    JOptionPane.showMessageDialog(this, "Kaybettiniz, başka zaman!!", null, JOptionPane.ERROR_MESSAGE);
+                    break;
+
+                case 0:
+                    bombaalar[x][y].setBackground(Color.lightGray);
+                    ++this.patlatilmayan;
+
+                    // patlamadi alan acildi
+
+                    if (oyunKazanma()) {
+                        // belkide oyun kazanildi
+                        JOptionPane.showMessageDialog(rootPane, "Kazandınız oyun sizindir :D"); // kazanma durumu
+                    }
+
+                    for (int i = -1; i <= 1; i++) {
+                        for (int j = -1; j <= 1; j++) {
+                            try {
+                                butonTikla(x + i, y + j);
+                            } catch (Exception e) {e.printStackTrace();}
+                        }
+                    }
+                    break;
+
+                default:
+                    // varsayilan durum
+                    bombaalar[x][y].setText(Integer.toString(tarla[x][y]));
+                    bombaalar[x][y].setBackground(Color.lightGray);
+                    ++this.patlatilmayan;
+
+                    if (oyunKazanma()) {
+                        JOptionPane.showMessageDialog(rootPane, "Kazandınız oyun sizindir :D"); // kazanma durumu
+                    }
+
+                    break;
+            }
+        }
     }
 
     // Ikon butonuna tiklanma durumunda duygu degistirme
