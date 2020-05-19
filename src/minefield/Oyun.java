@@ -154,6 +154,7 @@ public class Oyun extends JFrame {
                 bombaalar[i][j] = new JButton();
                 bombaalar[i][j].setPreferredSize(new Dimension(12, 12));
                 bombaalar[i][j].setBorder(new LineBorder(Color.BLACK));
+                bombaalar[i][j].setBackground(Color.YELLOW);
                 bombaalar[i][j].setBorderPainted(true);
                 bombaalar[i][j].setName(i + " " + j);
                 bombaalar[i][j].addActionListener(oyun_motoru);
