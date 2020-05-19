@@ -10,7 +10,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.border.LineBorder;
 
-public class oyun extends JFrame {
+public class Oyun extends JFrame {
 
     private JButton[][] bombaalar; // mayin olacak butonlar
     private JButton duygu_butonum; // duygu butonum
@@ -29,7 +29,7 @@ public class oyun extends JFrame {
     private Image gulumse_foto, gulumse_2_foto, bayrak_foto, bayrak_2_foto, mayin_foto, mayin_2_foto, kayip_foto, kayip_2_foto;
 
 
-    public oyun(int size, int difficulty) {
+    public Oyun(int size, int difficulty) {
         mayin_yok = size*(1 + difficulty/2);
         this.setSize(size* SABIT_BOYUTLANDIRICI, size* SABIT_BOYUTLANDIRICI);
         this.setTitle("Kerkük Sınırı :D");
@@ -81,7 +81,7 @@ public class oyun extends JFrame {
         }
     }
 
-    public void main(oyun frame, int boyut) {
+    public void main(Oyun frame, int boyut) {
         OyunMotoru oyun_motoru = new OyunMotoru(frame); // Oyun motorumu olusturuyorum
         FareyiIzle fareyi_izle = new FareyiIzle(frame); // Fare takibim
         JPanel ana_panelim = new JPanel();
@@ -280,9 +280,9 @@ public class oyun extends JFrame {
 }
 
 class OyunMotoru implements ActionListener {
-    oyun parent;
+    Oyun parent;
 
-    OyunMotoru(oyun parent) { this.parent = parent; }
+    OyunMotoru(Oyun parent) { this.parent = parent; }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
@@ -301,9 +301,9 @@ class OyunMotoru implements ActionListener {
 }
 
 class FareyiIzle implements MouseListener {
-    oyun parent;
+    Oyun parent;
 
-    FareyiIzle(oyun parent) { this.parent = parent; }
+    FareyiIzle(Oyun parent) { this.parent = parent; }
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {}
@@ -332,9 +332,9 @@ class FareyiIzle implements MouseListener {
 
 class Zamanlayici implements Runnable {
     private Thread t;
-    private oyun yeni_oyun;
+    private Oyun yeni_oyun;
 
-    Zamanlayici(oyun yeni_oyun) { this.yeni_oyun = yeni_oyun; }
+    Zamanlayici(Oyun yeni_oyun) { this.yeni_oyun = yeni_oyun; }
 
     @Override
     public void run() {
