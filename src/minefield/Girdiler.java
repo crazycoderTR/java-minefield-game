@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 
 public class Girdiler extends JFrame {
 
-    final private MayinTarlasi MayinTarlasi_; // oyuna referans etmemiz lazim
-    private GirdiTut GirdiTut_;
+    final private MayinTarlasi mayin_tarlasi; // oyuna referans etmemiz lazim
+    private GirdiTut girdi_tut;
     private int boyut;
     private JPanel panel;
     private JLabel label;
@@ -16,7 +16,7 @@ public class Girdiler extends JFrame {
 
 
     public Girdiler(MayinTarlasi mayin_tarlasi) {
-        this.MayinTarlasi_ = mayin_tarlasi;
+        this.mayin_tarlasi = mayin_tarlasi;
         this.setSize(400, 100);
         this.setTitle("Girdi");
         setLocationRelativeTo(null); // ekranin ortasinda baslat
@@ -26,13 +26,13 @@ public class Girdiler extends JFrame {
     // Getter & Setter
     public void set(int n) {
         boyut = n;
-        MayinTarlasi_.oyun(boyut);
+        mayin_tarlasi.oyun(boyut);
     }
 
     public int get() { return boyut; }
 
-    public void main(Girdiler Girdiler_) {
-        GirdiTut_ = new GirdiTut(Girdiler_); // girdi instance mizi olusturduk
+    public void main(Girdiler girdiler) {
+        girdi_tut = new GirdiTut(girdiler); // girdi instance mizi olusturduk
 
         boyut = 0;
 
@@ -42,10 +42,10 @@ public class Girdiler extends JFrame {
         panel.add(label);
 
         text = new JTextField(30);
-        text.addActionListener(GirdiTut_);
+        text.addActionListener(girdi_tut);
         panel.add(text);
 
-        Girdiler_.setContentPane(panel); // girdi panelimizi olusturuyoruz
+        girdiler.setContentPane(panel); // girdi panelimizi olusturuyoruz
         this.setVisible(true);
     }
 }
@@ -66,7 +66,7 @@ class GirdiTut implements ActionListener {
             try {
                 girdi = text.getText();
                 boyut = Integer.parseInt(girdi);
-                if (boyut<=6) {
+                if (boyut <= 6) {
                     JOptionPane.showMessageDialog(parent,
                             "Büyük veriler giriniz, çocuk parkı mı burası", "Hatalı Girdi!",
                             JOptionPane.ERROR_MESSAGE);

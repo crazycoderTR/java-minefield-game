@@ -29,20 +29,20 @@ public class Oyun extends JFrame {
     private Image gulumse_foto, gulumse_2_foto, bayrak_foto, bayrak_2_foto, mayin_foto, mayin_2_foto, kayip_foto, kayip_2_foto;
 
 
-    public Oyun(int size, int difficulty) {
-        mayin_yok = size*(1 + difficulty/2);
-        this.setSize(size* SABIT_BOYUTLANDIRICI, size* SABIT_BOYUTLANDIRICI);
+    public Oyun(int boyut, int zorluk) {
+        mayin_yok = boyut*(1 + zorluk/2);
+        this.setSize(boyut*SABIT_BOYUTLANDIRICI, boyut*SABIT_BOYUTLANDIRICI + 50);
         this.setTitle("Kerkük Sınırı :D");
         setLocationRelativeTo(null); // Ortadan acil
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // Sonlandirilma
     }
 
-    private void mayinDoseme(int size) {
+    private void mayinDoseme(int boyut) {
         Random rnd = new Random();
 
-        tarla = new int[size][size]; // Kullanicidan aldigimiz veriler ile oyun alani olusturduk
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; i < size; j++) {
+        tarla = new int[boyut][boyut]; // Kullanicidan aldigimiz veriler ile oyun alani olusturduk
+        for (int i = 0; i < boyut; i++) {
+            for (int j = 0; j < boyut; j++) {
                 tarla[i][j] = 0; // Varsayilan bos kabul ediyoruz
             }
         }
@@ -51,8 +51,8 @@ public class Oyun extends JFrame {
         int xNokta, yNokta;
 
         while (adet < mayin_yok) {
-            xNokta = rnd.nextInt(size);
-            yNokta = rnd.nextInt(size);
+            xNokta = rnd.nextInt(boyut);
+            yNokta = rnd.nextInt(boyut);
 
             if (tarla[xNokta][yNokta] != -1) {
                 tarla[xNokta][yNokta] = -1; // Mayin doseme
@@ -61,8 +61,8 @@ public class Oyun extends JFrame {
         }
 
         // Sinirlardaki alanlara bomba ve bayrak atma
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < boyut; i++) {
+            for (int j = 0; j < boyut; j++) {
                 if (tarla[i][j] == -1) {
                     for (int k = -1; k <= 1; k++) {
                         for (int l = -1; l <= 1; l++) {
@@ -70,10 +70,7 @@ public class Oyun extends JFrame {
                                 if (tarla[i+k][j+l] != -1) {
                                     tarla[i+k][j+l] += 1; // Bayraklik temiz alan
                                 }
-                            } catch (Exception e) {
-                                // Hata yakalama
-                                e.printStackTrace();
-                            }
+                            } catch (Exception e) {}
                         }
                     }
                 }
@@ -114,10 +111,7 @@ public class Oyun extends JFrame {
 
             mayin_foto = ImageIO.read(getClass().getResource("images/mayin.png"));
             mayin_2_foto = mayin_foto.getScaledInstance(SABIT_BOYUTLANDIRICI, SABIT_BOYUTLANDIRICI, Image.SCALE_SMOOTH);
-        } catch (Exception e) {
-            // Hata yakalama
-            e.printStackTrace();
-        }
+        } catch (Exception e) {}
 
         ana_panelim.setLayout(new BoxLayout(ana_panelim, BoxLayout.Y_AXIS));
 
@@ -144,9 +138,9 @@ public class Oyun extends JFrame {
 
         ust_panel.add(jLabel1);
         ust_panel.add(bayrak_label);
-        ust_panel.add(Box.createRigidArea(new Dimension((boyut - 1)*15 - 80, 50)));
+        ust_panel.add(Box.createRigidArea(new Dimension((boyut - 1)*15 - 90, 50)));
         ust_panel.add(duygu_butonum, BorderLayout.PAGE_START);
-        ust_panel.add(Box.createRigidArea(new Dimension((boyut - 1)*15 - 85, 50)));
+        ust_panel.add(Box.createRigidArea(new Dimension((boyut - 1)*15 - 95, 50)));
         ust_panel.add(jLabel2);
         ust_panel.add(zaman_label);
 
@@ -209,7 +203,7 @@ public class Oyun extends JFrame {
 
     // herhangi bir butona tiklanma olayi
     public void butonTikla(int x, int y) {
-        if (!tiklanan[x][y] && bayrak_kontrol[x][y]) {
+        if (!tiklanan[x][y] && !bayrak_kontrol[x][y]) {
             tiklanan[x][y] = true;
 
             switch (tarla[x][y]) {
@@ -217,11 +211,16 @@ public class Oyun extends JFrame {
                     // mayin olma durumu
                     try {
                         bombaalar[x][y].setIcon(new ImageIcon(mayin_2_foto)); // mayina denk geldi
-                        bombaalar[x][y].setBackground(Color.RED);
+                    } catch (Exception e) {}
+                    bombaalar[x][y].setBackground(Color.RED);
+                    try {
                         duygu_butonum.setIcon(new ImageIcon(kayip_2_foto));
-                    } catch (Exception e) {e.printStackTrace();}
+                    } catch (Exception e) {}
 
                     JOptionPane.showMessageDialog(this, "Kaybettiniz, başka zaman!!", null, JOptionPane.ERROR_MESSAGE);
+
+                    System.exit(0);
+
                     break;
 
                 case 0:
@@ -233,13 +232,14 @@ public class Oyun extends JFrame {
                     if (oyunKazanma()) {
                         // belkide oyun kazanildi
                         JOptionPane.showMessageDialog(rootPane, "Kazandınız oyun sizindir :D"); // kazanma durumu
+                        System.exit(0);
                     }
 
                     for (int i = -1; i <= 1; i++) {
                         for (int j = -1; j <= 1; j++) {
                             try {
                                 butonTikla(x + i, y + j);
-                            } catch (Exception e) {e.printStackTrace();}
+                            } catch (Exception e) {}
                         }
                     }
                     break;
@@ -252,6 +252,7 @@ public class Oyun extends JFrame {
 
                     if (oyunKazanma()) {
                         JOptionPane.showMessageDialog(rootPane, "Kazandınız oyun sizindir :D"); // kazanma durumu
+                        System.exit(0);
                     }
 
                     break;
@@ -275,7 +276,7 @@ public class Oyun extends JFrame {
         String[] zaman_text = this.zaman_label.getText().split(" ");
         int zaman = Integer.parseInt(zaman_text[0]);
         ++zaman;
-        this.zaman_label.setText(Integer.toString(zaman) + " sn");
+        this.zaman_label.setText(Integer.toString(zaman) + " s");
     }
 }
 
@@ -287,12 +288,12 @@ class OyunMotoru implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         Object kaynak_noktam = actionEvent.getSource();
-        JButton tiklanan = (JButton) kaynak_noktam;
-        String isim = tiklanan.getName();
+        JButton tiklanan_buton = (JButton) kaynak_noktam;
+        String isim = tiklanan_buton.getName();
         if (isim.equals("duygu_butonum")) {
             parent.durumDegistir();
         } else {
-            String[] xy = tiklanan.getName().split(" ", 2); // tiklananin ismini al
+            String[] xy = tiklanan_buton.getName().split(" ", 2); // tiklananin ismini al
             int x = Integer.parseInt(xy[0]);
             int y = Integer.parseInt(xy[1]);
             parent.butonTikla(x, y);
@@ -305,16 +306,9 @@ class FareyiIzle implements MouseListener {
 
     FareyiIzle(Oyun parent) { this.parent = parent; }
 
-    @Override
     public void mouseClicked(MouseEvent mouseEvent) {}
-
-    @Override
     public void mousePressed(MouseEvent mouseEvent) {}
-
-    @Override
     public void mouseEntered(MouseEvent mouseEvent) {}
-
-    @Override
     public void mouseExited(MouseEvent mouseEvent) {}
 
     @Override

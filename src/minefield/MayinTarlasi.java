@@ -3,13 +3,13 @@ package minefield;
 import javax.swing.*;
 
 public class MayinTarlasi {
-    private static Girdiler Girdiler_;
-    private static Oyun YeniOyun;
-    private static MayinTarlasi MayinTarlasi_;
+    private static Girdiler girdiler;
+    private static Oyun yeni_oyun;
+    private static MayinTarlasi mayin_tarlasi;
 
-    public void baslat(MayinTarlasi mayinTarlasi) {
-        Girdiler_ = new Girdiler(mayinTarlasi);
-        Girdiler_.main(Girdiler_);
+    public void baslat(MayinTarlasi mayin_tarlasi) {
+        girdiler = new Girdiler(mayin_tarlasi);
+        girdiler.main(girdiler);
     }
 
     public void oyun (int boyut) {
@@ -19,12 +19,12 @@ public class MayinTarlasi {
         if (zorluk == -1) {
             System.exit(0); // ben boyle bir secenek sunmadim hoop disarii
         }
-        YeniOyun = new Oyun(boyut, zorluk); // yeni oyun ayarlarini iletiyoruz
-        YeniOyun.main(YeniOyun, boyut); // yeni oyun baslatma
+        yeni_oyun = new Oyun(boyut, zorluk); // yeni oyun ayarlarini iletiyoruz
+        yeni_oyun.main(yeni_oyun, boyut); // yeni oyun baslatma
     }
 
     public static void main(String[] args) {
-        MayinTarlasi_ = new MayinTarlasi(); // oyun instance imizi olusturduk
-        MayinTarlasi_.baslat(MayinTarlasi_); // oyun baslattik
+        mayin_tarlasi = new MayinTarlasi(); // oyun instance imizi olusturduk
+        mayin_tarlasi.baslat(mayin_tarlasi); // oyun baslattik
     }
 }
