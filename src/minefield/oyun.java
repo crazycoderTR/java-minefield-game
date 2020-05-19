@@ -137,7 +137,7 @@ public class oyun extends JFrame {
         duygu_butonum.setName("duygu_butonum");
         duygu_butonum.addActionListener(oyun_motoru);
 
-        JLabel jLabel2 = new JLabel("Zaman: ");
+        JLabel jLabel2 = new JLabel(" Zaman: ");
         zaman_label = new JLabel("0");
         zaman_label.setAlignmentX(Component.RIGHT_ALIGNMENT); // saga yasla
         zaman_label.setHorizontalAlignment(JLabel.RIGHT);
@@ -176,6 +176,10 @@ public class oyun extends JFrame {
         this.setVisible(true);
 
         mayinDoseme(size);
+
+        // timer baslat
+        Zamanlayici zamanlayici = new Zamanlayici(this);
+        zamanlayici.baslat();
     }
 
     public void sagTiklama (int x, int y) {
@@ -198,6 +202,11 @@ public class oyun extends JFrame {
         }
     }
 
+    private boolean oyunKazanma() {
+        // patlatilmayan + mayin_yok toplami toplam alandaki buton sayisina esit olmali ki bitsin
+        return (this.patlatilmayan) == (Math.pow(this.tarla.length, 2) - this.mayin_yok);
+    }
+
     // herhangi bir butona tiklanma olayi
     public void butonTikla(int x, int y) {
 
@@ -212,6 +221,14 @@ public class oyun extends JFrame {
             gulumseme = true;
             duygu_butonum.setIcon(new ImageIcon(gulumse_2_foto));
         }
+    }
+
+    // Zamani arttir
+    public void zamanlayici() {
+        String[] zaman_text = this.zaman_label.getText().split(" ");
+        int zaman = Integer.parseInt(zaman_text[0]);
+        ++zaman;
+        this.zaman_label.setText(Integer.toString(zaman) + " sn");
     }
 }
 
@@ -262,6 +279,32 @@ class FareyiIzle implements MouseListener {
             int x = Integer.parseInt(xy[0]);
             int y = Integer.parseInt(xy[1]);
             parent.sagTiklama(x, y);
+        }
+    }
+}
+
+class Zamanlayici implements Runnable {
+    private Thread t;
+    private oyun yeni_oyun;
+
+    Zamanlayici(oyun yeni_oyun) { this.yeni_oyun = yeni_oyun; }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(1000); // 1 saniye
+                yeni_oyun.zamanlayici();
+            } catch (Exception e) {
+                System.exit(0);
+            }
+        }
+    }
+
+    public void baslat() {
+        if (t == null) {
+            t = new Thread(this); // burayi isaret goster oyun alanini
+            t.start();
         }
     }
 }
